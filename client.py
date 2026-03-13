@@ -3,7 +3,7 @@ import json
 from encryption import encrypt, decrypt
 
 SERVER_IP = "127.0.0.1"
-PORT = 5050
+PORT = 6000
 
 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -18,6 +18,7 @@ join_msg = {
 client.sendto(encrypt(json.dumps(join_msg)), (SERVER_IP, PORT))
 
 while True:
+
     # get movement input
     x = int(input("Move X: "))
     y = int(input("Move Y: "))
@@ -32,11 +33,16 @@ while True:
     # send move to server
     client.sendto(encrypt(json.dumps(move_msg)), (SERVER_IP, PORT))
 
-    # receive updated game state
-    data, _ = client.recvfrom(2048)
+    # wait until server sends updated position
+    while True:
+        data, _ = client.recvfrom(2048)
 
-    # decrypt and convert JSON
-    decrypted = decrypt(data)
-    state = json.loads(decrypted)
+        decrypted = decrypt(data)
+        state = json.loads(decrypted)
+
+        # check if our player state updated
+        if player_id in state:
+            if state[player_id]["x"] == x and state[player_id]["y"] == y:
+                break
 
     print("Game state:", state)
