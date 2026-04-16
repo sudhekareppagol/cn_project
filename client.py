@@ -2,7 +2,7 @@ import socket
 import json
 from encryption import encrypt, decrypt
 
-SERVER_IP = "127.0.0.1"
+SERVER_IP = "10.30.202.91"
 PORT = 6000
 
 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
